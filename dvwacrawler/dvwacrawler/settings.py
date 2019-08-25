@@ -14,12 +14,18 @@ BOT_NAME = 'dvwacrawler'
 SPIDER_MODULES = ['dvwacrawler.spiders']
 NEWSPIDER_MODULE = 'dvwacrawler.spiders'
 
+# ITEM_PIPELINES = ['dvwacrawler.pipelines.MongoDBPipeline']
+
+MONGODB_SERVER = uri = "mongodb://Lewis:starwars10@192.168.0.119/dvwa"
+MONGODB_PORT = 27017
+MONGODB_DB = "dvwa"
+MONGODB_COLLECTION = "users"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'dvwacrawler (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
