@@ -1,0 +1,16 @@
+
+# DVWA Settings
+
+DVWA_SITE_NAME = 'DVWA'
+DVWA_BASE_URL = 'http://192.168.0.125/'
+DVWA_LOGIN_PAGE = 'login.php'
+DVWA_VULNERABILITY_POINT = 'vulnerabilities/sqli/'
+DVWA_LOGIN_USERNAME = 'admin'
+DVWA_LOGIN_PASSWORD = 'password'
+
+# SCRAPY SETTINGS
+USER_AGENT = "USER_AGENT"
+
+# COOKIES
+DVWA_SECURITY_VALUE = 'security'
+DVWA_SECURITY_KEY = 'low'
