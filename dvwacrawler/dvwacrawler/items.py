@@ -6,9 +6,9 @@
 # https://docs.scrapy.org/en/latest/topics/items.html
 
 import scrapy
+from scrapy import Field, Item
 
 
-class DvwacrawlerItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class DvwacrawlerItem(Item):
+    first_name = Field()
+    surname = Field()
