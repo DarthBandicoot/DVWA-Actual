@@ -12,3 +12,5 @@ from scrapy import Field, Item
 class DvwacrawlerItem(Item):
     first_name = Field()
     surname = Field()
+    database_name = Field()
+    database_version = Field()

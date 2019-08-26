@@ -35,6 +35,6 @@ class MongoDBPipeline(object):
     #         return item
 
     def process_item(self, item, spider):
-        valid = True
+        print("Test If reaches here")
         self.collection.insert(dict(item))
         return item
