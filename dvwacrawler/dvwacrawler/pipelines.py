@@ -23,13 +23,18 @@ class MongoDBPipeline(object):
         db = connection[MONGODB_DB]
         self.collection = db[MONGODB_COLLECTION]
 
+    # def process_item(self, item, spider):
+    #     valid = True
+    #     for data in item:
+    #         if not data:
+    #             data = False
+    #             raise DropItem("Missing {0}!".format(data))
+    #         if valid:
+    #             self.collection.insert(dict(item))
+    #             log.logger.info("Data added to MongoDB ")
+    #         return item
+
     def process_item(self, item, spider):
         valid = True
-        for data in item:
-            if not data:
-                data = False
-                raise DropItem("Missing {0}!".format(data))
-            if valid:
-                self.collection.insert(dict(item))
-                log.logger.info("Data added to MongoDB ")
-            return item
+        self.collection.insert(dict(item))
+        return item
