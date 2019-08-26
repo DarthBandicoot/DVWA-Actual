@@ -126,23 +126,25 @@ class DVWASpider(Spider):
                 if user[0] != '':
                     item['first_name'] = user[0]
                     item['surname'] = user[1]
-                if user[0] == '' and user[1] in range(10):
+                if user[0] == '' and user[1].isdigit and user[1] != 'root@localhost</pre>\n':
                     item['database_version'] = user[1]
-                if user[0] == '' and user[1] not in range(10):
+                if user[0] == '' and user[1].isdigit is False:
                     item['database_name'] = user[1]
                 print("Item - {}".format(item))
                 yield item
 
     def parse_users(self, response):
         self.db_users = html_parser(response)
-        print(self.db_users)
         launch_payload = scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
                                         callback=self.payloads)
         launch_payload.meta['type'] = 'version'
         return launch_payload
 
     def parse_version(self, response):
-        self.db_users.append(html_parser(response))
+        output = html_parser(response)
+        for i in output:
+            if i[0] not in self.db_users:
+                self.db_users.append(i)
         print("Parsed Version")
         launch_payload = scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
                                         callback=self.payloads)
@@ -150,7 +152,10 @@ class DVWASpider(Spider):
         return launch_payload
 
     def parse_database(self, response):
-        self.db_users.append(html_parser(response))
+        output = html_parser(response)
+        for i in output:
+            if i[0] not in self.db_users:
+                self.db_users.append(i)
         print("Parsed DB Name")
         launch_payload = scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
                                         callback=self.payloads)
