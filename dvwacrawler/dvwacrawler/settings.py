@@ -18,7 +18,8 @@ DUPEFILTER_CLASS = 'scrapy.dupefilters.BaseDupeFilter'
 
 ITEM_PIPELINES = {'dvwacrawler.pipelines.MongoDBPipeline': 300}
 
-MONGODB_SERVER = "mongodb://Lewis:starwars10@192.168.0.119/dvwa"
+# MONGODB_SERVER = "mongodb://Lewis:********@192.168.0.119/dvwa"
+MONGODB_SERVER = "localhost"
 MONGODB_PORT = 27017
 
 MONGODB_DB = "dvwa"
