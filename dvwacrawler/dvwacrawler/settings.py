@@ -14,6 +14,8 @@ BOT_NAME = 'dvwacrawler'
 SPIDER_MODULES = ['dvwacrawler.spiders']
 NEWSPIDER_MODULE = 'dvwacrawler.spiders'
 
+DUPEFILTER_CLASS = 'scrapy.dupefilters.BaseDupeFilter'
+
 # ITEM_PIPELINES = ['dvwacrawler.pipelines.MongoDBPipeline']
 
 MONGODB_SERVER = uri = "mongodb://Lewis:starwars10@192.168.0.119/dvwa"
