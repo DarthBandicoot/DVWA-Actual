@@ -1,4 +1,6 @@
 How to run.
 
 1. navigate terminal to inside the crawler directory
-2. use "scrapy crawl dvwa_spider"
+2. Update settings to match your MongoDB settings
+3. Check and update constants if required to match the DVWA VM IP address and other settings
+4. use "scrapy crawl dvwa_spider"
