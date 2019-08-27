@@ -1,0 +1,4 @@
+How to run.
+
+1. navigate terminal to inside the crawler directory
+2. use "scrapy crawl dvwa_spider"

@@ -13,6 +13,7 @@ class DVWASpider(Spider):
     sqli_characters - characters to use in the vulnerability scan
     db_users - dictionary to populate with the users found in the vulnerability
     """
+
     name = 'dvwa_spider'
     sqli_characters = ["'", "\"", "`"]
     count = 0
