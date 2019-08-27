@@ -83,16 +83,13 @@ class DVWASpider(Spider):
         confirm_vuln = "You have an error in your SQL syntax;"
         print(response.text)
         if confirm_vuln.lower() in response.text.lower():
-            # launch_payload = scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
-            #                                 callback=self.payloads)
-            print("Vulnerable")
             return scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
                                   callback=self.payloads,
                                   cookies={'security': 'low'})
         else:
             return scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
                                   callback=self.vulnerability_scan,
-                                  cookies={DVWA_SECURITY_KEY: DVWA_SECURITY_VALUE})
+                                  cookies={'security': 'low'})
 
     def payloads(self, response):
         type = response.meta.get('type')
@@ -108,7 +105,6 @@ class DVWASpider(Spider):
                 formdata={'id': payloads[0]},
                 callback=self.parse_users
             )
-            # return scrapy.Request.
         elif type == "version":
             yield scrapy.FormRequest.from_response(
                 response,
